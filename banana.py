@@ -25,54 +25,6 @@ import numpy as np
 from pymcmcstat.MCMC import MCMC
 from pymcmcstat.MCMCPlotting import MCMCPlotting
 
-# Initialize MCMC objects
-mh = MCMC()
-am = MCMC()
-dr = MCMC()
-dram = MCMC()
-
-class Banana_Parameters:
-    def __init__(self, rho = 0.9, npar = 12, a = 1, b = 1, mu = None):
-        self.rho = rho
-        self.npar = npar
-        self.a = a
-        self.b = b
-        
-        self.sig = np.eye(npar)
-        self.sig[0,1] = rho
-        self.sig[1,0] = rho
-        self.lam = np.linalg.inv(self.sig)
-        
-        if mu is None:
-            self.mu = np.zeros([npar, 1])
-            
-npar = 2 # number of model parameters
-udobj = Banana_Parameters(npar = npar) # user defined object
-
-# initialize data within each MCMC object
-mh.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
-am.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
-dr.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
-dram.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
-
-
-# Add model parameters
-for ii in xrange(npar):
-    mh.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
-    am.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
-    dr.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
-    dram.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
-
-# Define options - include sampling algorithm!
-mh.simulation_options.define_simulation_options(
-        nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='mh')
-am.simulation_options.define_simulation_options(
-        nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='am', adaptint=100)
-dr.simulation_options.define_simulation_options(
-        nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='dr', ntry = 2)
-dram.simulation_options.define_simulation_options(
-        nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='dram', adaptint=100, ntry = 2)
-
 # Define model object
 def bananafunction(x, a, b):
     response = x
@@ -103,7 +55,51 @@ def bananass(theta, data):
     stage2 = np.matmul(stage1, baninv)
     
     return stage2
-    
+
+class Banana_Parameters:
+    def __init__(self, rho = 0.9, npar = 12, a = 1, b = 1, mu = None):
+        self.rho = rho
+        self.npar = npar
+        self.a = a
+        self.b = b
+        
+        self.sig = np.eye(npar)
+        self.sig[0,1] = rho
+        self.sig[1,0] = rho
+        self.lam = np.linalg.inv(self.sig)
+        
+        if mu is None:
+            self.mu = np.zeros([npar, 1])
+            
+npar = 2 # number of model parameters
+udobj = Banana_Parameters(npar = npar) # user defined object
+
+# Initialize MCMC objects
+mh = MCMC()
+am = MCMC()
+dr = MCMC()
+dram = MCMC()
+
+# initialize data within each MCMC object
+mh.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
+am.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
+dr.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
+dram.data.add_data_set(np.zeros(1),np.zeros(1), user_defined_object = udobj)
+
+# Add model parameters
+for ii in xrange(npar):
+    mh.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
+    am.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
+    dr.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
+    dram.parameters.add_model_parameter(name = str('$x_{}$'.format(ii+1)), theta0 = 0.0)
+
+# Define options - include sampling algorithm!
+mh.simulation_options.define_simulation_options(nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='mh')
+am.simulation_options.define_simulation_options(nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='am', adaptint=100)
+dr.simulation_options.define_simulation_options(nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='dr', ntry = 2)
+dram.simulation_options.define_simulation_options(nsimu = int(2.0e3), qcov = np.eye(npar)*5, method='dram', adaptint=100, ntry = 2)
+
+# Define model settings
 mh.model_settings.define_model_settings(sos_function = bananass, N = 1)
 am.model_settings.define_model_settings(sos_function = bananass, N = 1)
 dr.model_settings.define_model_settings(sos_function = bananass, N = 1)
@@ -132,14 +128,10 @@ mcpl.plot_pairwise_correlation_panel(dram_results['chain'][:,0:2], dram_results[
 
 # Print acceptance statistics
 print('\n----------------\n')
-print('MH: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(mh_results['chain'][:,0])), 
-      mh.simulation_options.nsimu, 100*(1-mh_results['total_rejected'])))
-print('AM: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(am_results['chain'][:,0])), 
-      am.simulation_options.nsimu, 100*(1-am_results['total_rejected'])))
-print('DR: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(dr_results['chain'][:,0])), 
-      dr.simulation_options.nsimu, 100*(1-dr_results['total_rejected'])))
-print('DRAM: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(dram_results['chain'][:,0])), 
-      dram.simulation_options.nsimu, 100*(1-dram_results['total_rejected'])))
+print('MH: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(mh_results['chain'][:,0])), mh.simulation_options.nsimu, 100*(1-mh_results['total_rejected'])))
+print('AM: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(am_results['chain'][:,0])), am.simulation_options.nsimu, 100*(1-am_results['total_rejected'])))
+print('DR: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(dr_results['chain'][:,0])), dr.simulation_options.nsimu, 100*(1-dr_results['total_rejected'])))
+print('DRAM: Number of accepted runs: {} out of {} ({})'.format(len(np.unique(dram_results['chain'][:,0])), dram.simulation_options.nsimu, 100*(1-dram_results['total_rejected'])))
 
 # save chains for comparison
 np.savetxt('mh.txt', mh_results['chain'], delimiter=',')
