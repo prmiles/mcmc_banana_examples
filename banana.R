@@ -43,24 +43,20 @@ BananaSS <- function (p)
 
 # Run MCMC Simulations
 # Metropolis Hastings
-MCMC_MH <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5),
-                niter = 2000)
+MCMC_MH <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5), niter = 2000)
 MCMC_MH$count
 
 # Adaptive Metropolis
-MCMC_AM <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5),
-                 updatecov = 100, niter = 2000)
+MCMC_AM <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5), updatecov = 100, niter = 2000)
 MCMC_AM$count
 
 # Delayed Rejection
-MCMC_DR <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5),
-                 ntrydr = 2, niter = 2000)
+MCMC_DR <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5), ntrydr = 2, niter = 2000)
 MCMC_DR$count
 
 # Delayed Rejection Adaptive Metropolis
 print(system.time(
-  MCMC_DRAM <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5),
-                   updatecov = 100, ntrydr = 2, niter = 2000)
+  MCMC_DRAM <- modMCMC(f = BananaSS, p = c(0, 0.5), jump = diag(nrow = 2, x = 5), updatecov = 100, ntrydr = 2, niter = 2000)
 ))
 MCMC_DRAM$count
 

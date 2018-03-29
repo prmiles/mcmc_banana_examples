@@ -73,12 +73,9 @@ mcmcplot(dram.chain,[1,2],dram.results.names,'pairs',0)
 
 % Print acceptance statistics
 fprintf('\n----------------\n')
-fprintf('MH: Number of accepted runs: %i out of %i (%4.2f%s)\n',length(unique(mh.chain(:,1))), ...
-    options.nsimu, 100*(1-mh.results.rejected),'%');
-fprintf('AM: Number of accepted runs: %i out of %i (%4.2f%s)\n',length(unique(am.chain(:,1))), ...
-    options.nsimu, 100*(1-am.results.rejected),'%');
-fprintf('DR: Number of accepted runs: %i out of %i (%4.2f%s)\n',length(unique(dr.chain(:,1))), ...
-    options.nsimu, 100*(1-dr.results.rejected),'%');
+fprintf('MH: Number of accepted runs: %i out of %i (%4.2f%s)\n',length(unique(mh.chain(:,1))), options.nsimu, 100*(1-mh.results.rejected),'%');
+fprintf('AM: Number of accepted runs: %i out of %i (%4.2f%s)\n',length(unique(am.chain(:,1))), options.nsimu, 100*(1-am.results.rejected),'%');
+fprintf('DR: Number of accepted runs: %i out of %i (%4.2f%s)\n',length(unique(dr.chain(:,1))), options.nsimu, 100*(1-dr.results.rejected),'%');
 fprintf('DRAM: Number of accepted runs: %i out of %i (%4.2f%s)\n',length(unique(dram.chain(:,1))), ...
     options.nsimu, 100*(1-dram.results.rejected),'%');
 
